@@ -17,6 +17,6 @@ fi
 
 # Export messages from the Discord channel (make sure to replace channel_id and other necessary parameters)
 echo "Starting export..."
-./DiscordChatExporter.Cli -t $DISCORD_TOKEN export -c "YOUR_CHANNEL_ID" -f "html" -o "output.html"
+./DiscordChatExporter.Cli -t $DISCORD_TOKEN export -c "497312527550775297" -f "html" -o "output.html"
 
 echo "Export completed."
