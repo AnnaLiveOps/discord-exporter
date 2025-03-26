@@ -28,4 +28,22 @@ fi
 # Calculate the timestamp for 24 hours ago in ISO 8601 format (UTC)
 AFTER_TIMESTAMP=$(date -u -d "24 hours ago" +%Y-%m-%dT%H:%M:%SZ)
 
-# Run the export for
+# Run the export for messages from the last 24 hours
+echo "Starting export..."
+./"$DISCORD_EXPORTER_DIR"/DiscordChatExporter.Cli export \
+  --token "$DISCORD_TOKEN" \
+  --channel "497312527550775297" \
+  --format "Json" \
+  --output "output.json" \
+  --after "$AFTER_TIMESTAMP"
+
+echo "Export completed."
+
+# Verify that output.json exists and is not empty
+if [ -s "output.json" ]; then
+    echo "Sending exported data to Make..."
+    RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}\n" -X POST -H "Content-Type: application/json" -d @output.json "$MAKE_WEBHOOK_URL")
+    echo "Response from webhook: $RESPONSE"
+else
+    echo "Warning: output.json is empty or does not exist!"
+fi
