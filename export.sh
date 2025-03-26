@@ -10,7 +10,7 @@ if [ ! -f "$DISCORD_EXPORTER_DIR/DiscordChatExporter.Cli" ]; then
     echo "Discord Chat Exporter not found, installing..."
     mkdir -p "$DISCORD_EXPORTER_DIR"
     # Download the ZIP file
-    curl -L -o "$DISCORD_EXPORTER_DIR/DiscordChatExporter.Cli.linux-x64.zip" "https://github.com/Tyrrtz/DiscordChatExporter/releases/download/2.44.2/DiscordChatExporter.Cli.linux-x64.zip"
+    curl -L -o "$DISCORD_EXPORTER_DIR/DiscordChatExporter.Cli.linux-x64.zip" "https://github.com/Tyrrrz/DiscordChatExporter/releases/download/2.44.2/DiscordChatExporter.Cli.linux-x64.zip"
     
     # Check if the downloaded file is a valid ZIP archive
     if ! unzip -tq "$DISCORD_EXPORTER_DIR/DiscordChatExporter.Cli.linux-x64.zip" > /dev/null 2>&1; then
