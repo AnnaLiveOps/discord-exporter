@@ -1,33 +1,22 @@
 from flask import Flask
 import subprocess
-import os  # To access the secrets from environment variables
+import os
 
 app = Flask(__name__)
 
 @app.route('/')
+def home():
+    return "Discord Exporter is running. Go to /export to start exporting."
+
+@app.route('/export')
 def run_export():
     try:
-        # Fetch Discord token from GitHub secrets
-        discord_token = os.getenv("DISCORD_TOKEN")  # Get the Discord token from the environment
-
-        # Ensure the token is available before proceeding
-        if not discord_token:
-            return "Error: DISCORD_TOKEN not found in environment variables!"
-
-        # Run the export.sh script with the token as an environment variable
-        result = subprocess.run(
-            ["./export.sh", discord_token],  # Pass the token to the script if necessary
-            capture_output=True, 
-            text=True, 
-            timeout=60
-        )
-
-        return f"Export completed:<br>Output: {result.stdout}<br>Error: {result.stderr}"
-
+        # Run the export script
+        result = subprocess.run(["bash", "export.sh"], capture_output=True, text=True, timeout=120)
+        return f"Export completed:<br><pre>{result.stdout}</pre><br><pre>{result.stderr}</pre>"
     except Exception as e:
-        return f"Error executing the script: {e}"
+        return f"Error executing the script: {str(e)}"
 
 if __name__ == '__main__':
-    # Run the server on port 8080, available to the world
-    app.run(host='0.0.0.0', port=8080)
-
+    # Run the server on port 10000 (Render-compatible)
+    app.run(host='0.0.0.0', port=10000)
