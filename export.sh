@@ -9,7 +9,7 @@ MAKE_WEBHOOK_URL="https://hook.eu2.make.com/53nvbfmb02na8mh928dwhvf8vvfku5e8"
 if [ ! -f "$DISCORD_EXPORTER_DIR/DiscordChatExporter.Cli" ]; then
     echo "Discord Chat Exporter not found, installing..."
     mkdir -p "$DISCORD_EXPORTER_DIR"
-    # Download the ZIP file
+    # Download the ZIP file from the correct URL
     curl -L -o "$DISCORD_EXPORTER_DIR/DiscordChatExporter.Cli.linux-x64.zip" "https://github.com/Tyrrrz/DiscordChatExporter/releases/download/2.44.2/DiscordChatExporter.Cli.linux-x64.zip"
     
     # Check if the downloaded file is a valid ZIP archive
@@ -40,11 +40,11 @@ echo "Export completed."
 
 # Verify that output.json exists and is not empty
 if [ -s "output.json" ]; then
-    echo "Wrapping exported JSON data using Python..."
-    # Use Python to wrap the JSON data in an object with key "data"
-    python3 -c "import sys, json; print(json.dumps({'data': json.load(sys.stdin)}))" < output.json > wrapped_output.json
-    
-    echo "Sending wrapped exported data to Make..."
+    echo "Processing exported JSON data to extract message text..."
+    # Process the JSON: assuming output.json is a list of messages with a key "content"
+    python3 -c "import sys, json; data = json.load(sys.stdin); print(json.dumps({'text': '\n'.join(msg.get('content', '') for msg in data)}))" < output.json > wrapped_output.json
+
+    echo "Sending processed exported data to Make..."
     RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}\n" -X POST -H "Content-Type: application/json" --data-binary @wrapped_output.json "$MAKE_WEBHOOK_URL")
     echo "Response from webhook: $RESPONSE"
 else
