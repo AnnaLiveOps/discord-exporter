@@ -36,17 +36,16 @@ echo "Starting export..."
   --format "Json" \
   --output "output.json" \
   --after "$AFTER_TIMESTAMP"
-
 echo "Export completed."
 
 # Verify that output.json exists and is not empty
 if [ -s "output.json" ]; then
     echo "Wrapping exported JSON data using Python..."
     # Use Python to wrap the JSON data in an object with key "data"
-    WRAPPED_OUTPUT=$(python3 -c "import sys, json; print(json.dumps({'data': json.load(sys.stdin)}))" < output.json)
+    python3 -c "import sys, json; print(json.dumps({'data': json.load(sys.stdin)}))" < output.json > wrapped_output.json
     
     echo "Sending wrapped exported data to Make..."
-    RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}\n" -X POST -H "Content-Type: application/json" -d "$WRAPPED_OUTPUT" "$MAKE_WEBHOOK_URL")
+    RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}\n" -X POST -H "Content-Type: application/json" --data-binary @wrapped_output.json "$MAKE_WEBHOOK_URL")
     echo "Response from webhook: $RESPONSE"
 else
     echo "Warning: output.json is empty or does not exist!"
