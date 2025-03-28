@@ -1,6 +1,5 @@
 from flask import Flask
 import subprocess
-import os
 
 app = Flask(__name__)
 
@@ -11,11 +10,12 @@ def home():
 @app.route('/export')
 def run_export():
     try:
-        # Run the export script
-        result = subprocess.run(["bash", "export.sh"], capture_output=True, text=True, timeout=120)
-        return f"Export completed:<br><pre>{result.stdout}</pre><br><pre>{result.stderr}</pre>"
+        # Run the export script asynchronously (in the background)
+        subprocess.Popen(["bash", "export.sh"])
+        # Immediately return a minimal confirmation message
+        return "Export triggered successfully", 200
     except Exception as e:
-        return f"Error executing the script: {str(e)}"
+        return f"Error executing export.sh: {str(e)}", 500
 
 if __name__ == '__main__':
     # Run the server on port 10000 (Render-compatible)
