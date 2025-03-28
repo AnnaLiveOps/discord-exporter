@@ -43,9 +43,10 @@ if [ -s "output.json" ]; then
     echo "Processing exported JSON data to extract message text..."
     # Use Python to read output.json, extract message text, and join them into one string.
     # This assumes each message is either a string or a dict with a "content" key.
-    python3 -c "import sys, json; 
-data = json.load(sys.stdin); 
-texts = [msg if isinstance(msg, str) else msg.get('content', '') for msg in data]; 
+    python3 -c "import sys, json;
+data = json.load(sys.stdin);
+messages = data.get('messages', []);  # Extract messages array
+texts = [msg.get('content', '') for msg in messages if 'content' in msg];  # Extract text from messages
 print(json.dumps({'data': '\n'.join(texts)}))" < output.json > wrapped_output.json
 
     echo "Sending processed exported data to Make..."
